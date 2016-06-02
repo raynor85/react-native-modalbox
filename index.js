@@ -171,12 +171,13 @@ var ModalBox = React.createClass({
     this.state.positionDest = this.calculateModalPosition(this.state.containerHeight, this.state.containerWidth);
 
     this.state.isAnimateOpen = true;
+    var easingFactor = this.props.easingFactor !== undefined ? this.props.easingFactor : 0.8;
     this.state.animOpen = Animated.timing(
       this.state.position,
       {
         toValue: this.state.positionDest,
         duration: this.props.animationDuration,
-        easing: Easing.elastic(0.8)
+        easing: Easing.elastic(easingFactor)
       }
     );
     this.state.animOpen.start(() => {
@@ -207,10 +208,16 @@ var ModalBox = React.createClass({
       this.animateBackdropClose();
 
     this.state.isAnimateClose = true;
+
+    var isOrizontal = this.props.position === 'left' || this.props.position === 'right';
+    var target = isOrizontal ?
+      this.state.containerWidth :
+      this.state.containerHeight;
+
     this.state.animClose = Animated.timing(
       this.state.position,
       {
-        toValue: this.state.containerHeight,
+        toValue: target,
         duration: this.props.animationDuration
       }
     );
@@ -230,9 +237,12 @@ var ModalBox = React.createClass({
 
     if (this.props.position == "bottom") {
       position = containerHeight - this.state.height;
-    }
-    else if (this.props.position == "center") {
+    } else if (this.props.position == "center") {
       position = containerHeight / 2 - this.state.height / 2;
+    } else if (this.props.position == "left") {
+      // TODO
+    } else if (this.props.position == "right") {
+      position = containerWidth - this.state.width;
     }
     // Checking if the position >= 0
     if (position < 0) position = 0;
@@ -315,13 +325,15 @@ var ModalBox = React.createClass({
     // Fixing the position if the modal was already open or an animation was in progress
     if (this.state.isInitialized && (this.state.isOpen || this.state.isAnimateOpen || this.state.isAnimateClose)) {
       var position = this.state.isOpen ? modalPosition : this.state.containerHeight;
-
       // Checking if a animation was in progress
       if (this.state.isAnimateOpen) {
         position = modalPosition;
         this.stopAnimateOpen();
       } else if (this.state.isAnimateClose) {
-        position = this.state.containerHeight;
+        var isOrizontal = this.props.position === 'left' || this.props.position === 'right';
+        position = isOrizontal ?
+          this.state.containerWidth :
+          this.state.containerHeight;
         this.stopAnimateClose();
       }
       this.state.position.setValue(position);
@@ -360,19 +372,27 @@ var ModalBox = React.createClass({
    * Render the component
    */
   render: function() {
-    var visible     = this.state.isOpen || this.state.isAnimateOpen || this.state.isAnimateClose;
-    var size        = {height: this.state.containerHeight, width: this.state.containerWidth};
-    var offsetX     = (this.state.containerWidth - this.state.width) / 2;
-    var backdrop    = this.renderBackdrop(size);
-
+    var visible = this.state.isOpen || this.state.isAnimateOpen || this.state.isAnimateClose;
+    
     if (!visible) return <View/>
+
+    var size = {height: this.state.containerHeight, width: this.state.containerWidth};
+    var offsetX = (this.state.containerWidth - this.state.width) / 2;
+    var offsetY = (this.state.containerHeight - this.state.height) / 2;
+    var backdrop = this.renderBackdrop(size);
+    var isOrizontal = this.props.position === 'left' || this.props.position === 'right';
+    var transform = isOrizontal ? {
+      transform: [{translateY: offsetY}, {translateX: this.state.position}]
+    } : {
+      transform: [{translateY: this.state.position}, {translateX: offsetX}]
+    };
 
     return (
       <View style={[styles.transparent, styles.absolute]} pointerEvents={'box-none'} onLayout={this.onContainerLayout}>
         {backdrop}
         <Animated.View
          onLayout={this.onViewLayout}
-         style={[styles.wrapper, size, this.props.style, {transform: [{translateY: this.state.position}, {translateX: offsetX}]} ]}
+         style={[styles.wrapper, size, this.props.style, transform]}
          {...this.state.pan.panHandlers}>
           {this.props.children}
         </Animated.View>
