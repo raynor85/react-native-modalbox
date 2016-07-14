@@ -211,8 +211,8 @@ var ModalBox = React.createClass({
 
     this.state.isAnimateClose = true;
 
-    var isOrizontal = this.props.position === 'left' || this.props.position === 'right';
-    var target = isOrizontal ?
+    var isHorizontal = this.props.position === 'left' || this.props.position === 'right';
+    var target = isHorizontal ?
       this.state.containerWidth :
       this.state.containerHeight;
 
@@ -332,8 +332,8 @@ var ModalBox = React.createClass({
         position = modalPosition;
         this.stopAnimateOpen();
       } else if (this.state.isAnimateClose) {
-        var isOrizontal = this.props.position === 'left' || this.props.position === 'right';
-        position = isOrizontal ?
+        var isHorizontal = this.props.position === 'left' || this.props.position === 'right';
+        position = isHorizontal ?
           this.state.containerWidth :
           this.state.containerHeight;
         this.stopAnimateClose();
@@ -382,8 +382,8 @@ var ModalBox = React.createClass({
     var offsetX = (this.state.containerWidth - this.state.width) / 2;
     var offsetY = (this.state.containerHeight - this.state.height) / 2;
     var backdrop = this.renderBackdrop(size);
-    var isOrizontal = this.props.position === 'left' || this.props.position === 'right';
-    var transform = isOrizontal ? {
+    var isHorizontal = this.props.position === 'left' || this.props.position === 'right';
+    var transform = isHorizontal ? {
       transform: [{translateY: offsetY}, {translateX: this.state.position}]
     } : {
       transform: [{translateY: this.state.position}, {translateX: offsetX}]
