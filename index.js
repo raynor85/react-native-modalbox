@@ -390,7 +390,11 @@ var ModalBox = React.createClass({
     };
 
     return (
-      <View style={[styles.transparent, styles.absolute]} pointerEvents={'box-none'} onLayout={this.onContainerLayout}>
+      <View
+          style={[styles.transparent, styles.absolute]}
+          pointerEvents={'box-none'}
+          onLayout={this.onContainerLayout}
+          elevation={this.props.elevation}>
         {backdrop}
         <Animated.View
          onLayout={this.onViewLayout}
