@@ -70,7 +70,11 @@ var ModalBox = React.createClass({
   },
 
   getInitialState: function () {
-    var position = this.props.entry === 'top' ? -screen.height : screen.height;
+    var size = this.viewport ? {
+        width: this.viewport.width,
+        height: this.viewport.height
+      } : screen;
+    var position = this.props.entry === 'top' ? -size.height : size.height;
     return {
       position: new Animated.Value(position),
       backdropOpacity: new Animated.Value(0),
@@ -78,10 +82,10 @@ var ModalBox = React.createClass({
       isAnimateClose: false,
       isAnimateOpen: false,
       swipeToClose: false,
-      height: screen.height,
-      width: screen.width,
-      containerHeight: screen.height,
-      containerWidth: screen.width,
+      height: size.height,
+      width: size.width,
+      containerHeight: size.height,
+      containerWidth: size.width,
       isInitialized: false
     };
   },
@@ -92,6 +96,18 @@ var ModalBox = React.createClass({
   },
 
   componentWillReceiveProps: function(props) {
+    if (props.viewport) {
+      if (!this.viewport ||
+        this.viewport.width !== props.viewport.width ||
+        this.viewport.height !== props.viewport.height) {
+        this.viewport = props.viewport;
+        var existingPanHandlers = this.state.pan;
+        this.state = this.getInitialState();
+        if (existingPanHandlers) {
+          this.state.pan = existingPanHandlers;
+        }
+      }
+    }
     this.handleOpenning(props);
   },
 
