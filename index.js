@@ -97,9 +97,10 @@ var ModalBox = React.createClass({
 
   componentWillReceiveProps: function(props) {
     if (props.viewport) {
-      if (!this.viewport ||
-        this.viewport.width !== props.viewport.width ||
-        this.viewport.height !== props.viewport.height) {
+      if (!this.viewport) {
+        this.viewport = props.viewport;
+      } else if (this.viewport.width !== props.viewport.width ||
+                 this.viewport.height !== props.viewport.height) {
         this.viewport = props.viewport;
         var existingPanHandlers = this.state.pan;
         this.state = this.getInitialState();
