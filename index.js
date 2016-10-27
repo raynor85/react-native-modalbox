@@ -81,7 +81,6 @@ var ModalBox = React.createClass({
       isOpen: false,
       isAnimateClose: false,
       isAnimateOpen: false,
-      swipeToClose: false,
       height: size.height,
       width: size.width,
       containerHeight: size.height,
@@ -103,10 +102,11 @@ var ModalBox = React.createClass({
                  this.viewport.height !== props.viewport.height) {
         this.viewport = props.viewport;
         var existingPanHandlers = this.state.pan;
-        this.state = this.getInitialState();
+        var newState = this.getInitialState();
         if (existingPanHandlers) {
-          this.state.pan = existingPanHandlers;
+          newState.pan = existingPanHandlers;
         }
+        this.setState(newState);
       }
     }
     this.handleOpenning(props);
@@ -394,7 +394,7 @@ var ModalBox = React.createClass({
    */
   render: function() {
     var visible = this.state.isOpen || this.state.isAnimateOpen || this.state.isAnimateClose;
-    
+
     if (!visible) return <View/>
 
     var size = {height: this.state.containerHeight, width: this.state.containerWidth};
